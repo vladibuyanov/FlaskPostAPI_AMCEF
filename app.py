@@ -6,10 +6,7 @@ import requests
 
 app = Flask(__name__)
 api = Api()
-app.config['SECRET_KEY'] = "secret_key"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 
@@ -45,10 +42,11 @@ resource_fields = {
 }
 
 
-# Validation of input data (not work)
+# Validation of input data
 def validation_input(post_id, user_id, title, body):
-    if post_id == int and user_id == int and title == str and body == str:
-        return True
+    if type(post_id) == int and type(user_id):
+        if int and type(title) == str and type(body) == str:
+            return True
 
 
 # Validation with a third party API
