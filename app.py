@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
-
 import requests
 
 app = Flask(__name__)
@@ -10,6 +9,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 
+# Data base models
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=True)
@@ -34,12 +34,16 @@ posts_put_args.add_argument("user_id", type=int, help='User id of post')
 posts_put_args.add_argument("title", type=str, help='Post title')
 posts_put_args.add_argument("body", type=str, help='Post body')
 
+# Serialization to json
 resource_fields = {
     'id': fields.Integer,
     'user_id': fields.Integer,
     'title': fields.String,
     'body': fields.String,
 }
+
+# External API variable
+BASE = 'https://jsonplaceholder.typicode.com/'
 
 
 # Validation of input data
@@ -51,10 +55,16 @@ def validation_input(post_id, user_id, title, body):
 
 # Validation with a third party API
 def validation_user(user):
-    json_api = requests.get('https://jsonplaceholder.typicode.com/users').json()
+    json_api = requests.get(f'{BASE}users').json()
     user_id_list = [i['id'] for i in json_api]
     if user in user_id_list:
         return True
+
+
+# Search for a post using an external AP
+def search_post(post_id):
+    posts_res = requests.get(f'{BASE}posts/{post_id}').json()
+    return posts_res
 
 
 class Main(Resource):
@@ -63,8 +73,17 @@ class Main(Resource):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
             return result
-        else:
-            abort(404, message='Could not find post with that id')
+        post_from_api = Posts(
+            id=post_id,
+            user_id=search_post(post_id)['userId'],
+            title=search_post(post_id)['title'],
+            body=search_post(post_id)['body']
+        )
+        print(post_from_api)
+        db.session.add(post_from_api)
+        db.session.commit()
+        return search_post(post_id)
+
 
     def post(self, post_id):
         args = posts_post_args.parse_args()

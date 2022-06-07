@@ -1,11 +1,20 @@
 import requests
 
+user_id = 1
+post_id = 67
+
 BASE = 'https://jsonplaceholder.typicode.com/'
 
-res = requests.get(BASE + 'users').json()
-user_id = 1
+users_res = requests.get(BASE + 'users').json()
+post_res = requests.get(f'{BASE}posts/{post_id}').json()
 
-id_list = [i['id'] for i in res]
-print(id_list)
+
+# for users
+# id_list = [i['id'] for i in users_res]
+# if user_id in id_list:
+#     print(True)
+
+# for posts
+print(post_res)
 
 
