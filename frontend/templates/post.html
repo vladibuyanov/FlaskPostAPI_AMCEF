@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form method="post">
-        <label for="id">Post id</label>
-        <input required type="text" name="user_post" id="id">
-        <label for="user_id">User id</label>
-        <input required type="text" name="user_id" id="user_id">
-        <label for="title">Title</label>
-        <input required type="text" name="title" id="title">
-        <label for="body">Body</label>
-        <input required type="text" name="body" id="body">
+    <form class="inputs" method="post">
+        <div class="input">
+            <label for="id">Post id</label>
+            <input required type="text" name="user_post" id="id">
+        </div>
+        <div class="input">
+            <label for="user_id">User id</label>
+            <input required type="text" name="user_id" id="user_id">
+        </div>
+        <div class="input">
+            <label for="title">Title</label>
+            <input required type="text" name="title" id="title">
+        </div>
+        <div class="input">
+            <label for="body">Body</label>
+            <input required type="text" name="body" id="body">
+        </div>
         <button class="btn" type="submit">Post</button>
     </form>
     {{ res }}
