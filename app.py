@@ -2,11 +2,15 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 import requests
+from flasgger import Swagger, swag_from
+
+from swagger import *
 
 app = Flask(__name__)
 api = Api()
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
+swag = Swagger(app)
 
 
 # Data base models
@@ -69,6 +73,7 @@ def search_post(post_id):
 
 class Main(Resource):
     @marshal_with(resource_fields)
+    @swag_from(specs_dict)
     def get(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
@@ -79,13 +84,34 @@ class Main(Resource):
             title=search_post(post_id)['title'],
             body=search_post(post_id)['body']
         )
-        print(post_from_api)
         db.session.add(post_from_api)
         db.session.commit()
         return search_post(post_id)
 
-
+    @marshal_with(resource_fields)
+    # @swag_from(specs_dict_post)
     def post(self, post_id):
+        """
+        post endpoint
+        ---
+        tags:
+          - Posts
+        parameters:
+          - name: post_id
+            in: path
+            required: true
+            schema:
+              id: Posts
+              required:
+                - post_id
+              properties:
+                post_id:
+                  type: integer
+        responses:
+          200:
+            description: The product inserted in the database
+
+        """
         args = posts_post_args.parse_args()
         if validation_input(post_id, args['user_id'], args['title'], args['body']):
             if validation_user(args['user_id']):
@@ -99,12 +125,13 @@ class Main(Resource):
                     )
                     db.session.add(user_post)
                     db.session.commit()
-                    return 'Add done!', 201
+                    return user_post, 201
                 abort(409, message='Post with this id is already exist')
             abort(401, message='Authorization failed')
         abort(408, message='Incorrect data')
 
     @marshal_with(resource_fields)
+    @swag_from(specs_dict)
     def put(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
@@ -119,6 +146,7 @@ class Main(Resource):
             abort(408, message='Incorrect data')
         abort(409, message='Post not exist')
 
+    @swag_from(specs_dict)
     def delete(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         db.session.delete(result)

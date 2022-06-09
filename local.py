@@ -22,7 +22,7 @@ while user_post != 'stop':
 
     elif crud == "3":
         new_post = {
-                'id': int(input('id: ')),
+                'id': user_post,
                 'user_id': int(input('user_id: ')),
                 'title': input('title: '),
                 'body': input('body: ')
