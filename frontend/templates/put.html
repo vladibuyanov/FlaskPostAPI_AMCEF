@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+        <label for="id">Post id</label>
+        <input required type="text" name="user_post" id="id">
+        <label for="title">Title</label>
+        <input required type="text" name="title" id="title">
+        <label for="body">Body</label>
+        <input required type="text" name="body" id="body">
+        <button class="btn" type="submit">Put</button>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="post">
+        <label for="id">Id</label>
+        <input required type="text" name="user_post" id="id">
+        <button class="btn" type="submit">Get</button>
+    </form>
+    {{ res }}
+{% endblock %}
