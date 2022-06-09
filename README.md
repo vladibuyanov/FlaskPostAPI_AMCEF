@@ -4,7 +4,6 @@ A Python microservice containing a RESTful API for managing user messages.
 ## Content
 - [Tech](#tech)
 - [Usage](#Usage)
-- [Start Development server](#Start Development server)
 
 ## Technology
 - [Python](https://www.python.org/)
