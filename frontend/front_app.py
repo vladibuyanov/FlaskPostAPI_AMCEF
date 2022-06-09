@@ -10,8 +10,7 @@ BASE = "http://127.0.0.1:5000/"
 def get_json():
     if request.method == 'POST':
         user_post = request.form['user_post']
-        res = requests.get(BASE + f'/api/main/{user_post}')
-        print(type(res))
+        res = requests.get(BASE + f'/api/main/{user_post}').json()
         return render_template('get.html', res=res)
     return render_template('get.html')
 
@@ -39,7 +38,7 @@ def put_json():
             'title': request.form['title'],
             'body': request.form['body']
         }
-        res = requests.put(BASE + f'/api/main/{user_post}', json=new_post)
+        res = requests.put(BASE + f'/api/main/{user_post}', json=new_post).json()
         return render_template('put.html', res=res)
     return render_template('put.html')
 
@@ -48,7 +47,7 @@ def put_json():
 def delete_json():
     if request.method == 'POST':
         user_post = request.form['user_post']
-        res = requests.delete(BASE + f'/api/main/{user_post}')
+        res = requests.delete(BASE + f'/api/main/{user_post}').json()
         return render_template('delete.html', res=res)
     return render_template('delete.html')
 

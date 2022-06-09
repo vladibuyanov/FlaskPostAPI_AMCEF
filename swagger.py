@@ -46,7 +46,7 @@ specs_dict_delete = {
             "type": "integer",
             "name": "post_id",
             "required": "true",
-            "default": "5"
+            "default": "13"
         }
     ]
 }
@@ -69,6 +69,10 @@ specs_dict_post = {
             'schema': {
                 'type': 'object',
                 'properties': {
+                    'id': {
+                        'type': 'integer',
+                        'example': '13'
+                    },
                     'user_id': {
                         'type': 'integer',
                         'example': '1'
