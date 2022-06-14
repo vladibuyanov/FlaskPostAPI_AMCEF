@@ -1,8 +1,8 @@
-import requests
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger, swag_from
+import requests
 
 from swagger import *
 
@@ -52,7 +52,7 @@ resource_fields = {
 
 
 # Validation of input data
-def validation_input(post_id, user_id, title, body):
+def validation_post_input(post_id, user_id, title, body):
     if type(post_id) == int and type(user_id) == int:
         if type(title) == str and type(body) == str:
             return True
@@ -74,7 +74,9 @@ def validation_user(user):
 # Search for a post using an external AP
 def search_post(post_id):
     posts_res = requests.get(f'{BASE}posts/{post_id}').json()
-    return posts_res
+    if posts_res:
+        return posts_res
+    return False
 
 
 class Main(Resource):
@@ -83,21 +85,23 @@ class Main(Resource):
     def get(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
-            return result
-        post_from_api = Posts(
-            id=post_id,
-            user_id=search_post(post_id)['userId'],
-            title=search_post(post_id)['title'],
-            body=search_post(post_id)['body']
-        )
-        db.session.add(post_from_api)
-        db.session.commit()
-        return search_post(post_id), 200
+            return result, 200
+        elif search_post(post_id):
+            post_from_api = Posts(
+                id=post_id,
+                user_id=search_post(post_id)['userId'],
+                title=search_post(post_id)['title'],
+                body=search_post(post_id)['body']
+            )
+            db.session.add(post_from_api)
+            db.session.commit()
+            return search_post(post_id), 200
+        return abort(408, message='Post not exist')
 
     @swag_from(specs_dict_post)
     def post(self, post_id):
         args = posts_post_args.parse_args()
-        if validation_input(post_id, args['user_id'], args['title'], args['body']):
+        if validation_post_input(post_id, args['user_id'], args['title'], args['body']):
             if validation_user(args['user_id']):
                 result = Posts.query.filter_by(id=post_id).first()
                 if not result:
