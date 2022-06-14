@@ -28,14 +28,14 @@ class Posts(db.Model):
         return f'Post(user_id = {self.user_id}, title = {self.title}, body = {self.body})'
 
 
-# Posts - post
+# Posts - post request parsing
 posts_post_args = reqparse.RequestParser()
 posts_post_args.add_argument("id", type=int, help='Id of post', required=True)
 posts_post_args.add_argument("user_id", type=int, help='User id of post', required=True)
 posts_post_args.add_argument("title", type=str, help='Post title', required=True)
 posts_post_args.add_argument("body", type=str, help='Post body', required=True)
 
-# Posts - put
+# Posts - put request parsing
 posts_put_args = reqparse.RequestParser()
 posts_put_args.add_argument("id", type=int, help='Id of post')
 posts_put_args.add_argument("user_id", type=int, help='User id of post')
