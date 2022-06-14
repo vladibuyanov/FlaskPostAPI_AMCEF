@@ -1,5 +1,5 @@
 # Test work for AMCEF
-A Python microservice containing a RESTful API for managing user messages.
+Python microservice containing a RESTful API for managing user messages.
 
 ## Content
 - [Tech](#tech)
