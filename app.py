@@ -9,8 +9,12 @@ from swagger import *
 app = Flask(__name__)
 api = Api()
 app.config.from_pyfile('config.py')
+
 db = SQLAlchemy(app)
 swag = Swagger(app)
+
+# External API variable
+BASE = 'https://jsonplaceholder.typicode.com/'
 
 
 # Data base models
@@ -46,15 +50,17 @@ resource_fields = {
     'body': fields.String,
 }
 
-# External API variable
-BASE = 'https://jsonplaceholder.typicode.com/'
-
 
 # Validation of input data
 def validation_input(post_id, user_id, title, body):
-    if type(post_id) == int and type(user_id):
-        if int and type(title) == str and type(body) == str:
+    if type(post_id) == int and type(user_id) == int:
+        if type(title) == str and type(body) == str:
             return True
+
+
+def validation_put_input(title, body):
+    if type(title) == str and type(body) == str:
+        return True
 
 
 # Validation with a third party API
@@ -88,7 +94,6 @@ class Main(Resource):
         db.session.commit()
         return search_post(post_id), 200
 
-    @marshal_with(resource_fields)
     @swag_from(specs_dict_post)
     def post(self, post_id):
         args = posts_post_args.parse_args()
@@ -104,24 +109,23 @@ class Main(Resource):
                     )
                     db.session.add(user_post)
                     db.session.commit()
-                    return user_post, 201
+                    return 'Post was created', 201
                 abort(410, message='Post with this id is already exist')
             abort(401, message='Authorization failed')
         abort(403, message='Incorrect data')
 
-    @marshal_with(resource_fields)
     @swag_from(specs_dict_put)
     def put(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
             args = posts_put_args.parse_args()
-            if validation_input(post_id, args['user_id'], args['title'], args['body']):
+            if validation_put_input(args['title'], args['body']):
                 if args['title']:
                     result.title = args['title']
                 if args['body']:
                     result.body = args['body']
                 db.session.commit()
-                return result, 202
+                return 'Post was changed', 202
             abort(403, message='Incorrect data')
         abort(408, message='Post not exist')
 
@@ -136,7 +140,6 @@ class Main(Resource):
 
 
 api.add_resource(Main, '/api/main/<int:post_id>')
-
 api.init_app(app)
 
 if __name__ == '__main__':

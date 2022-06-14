@@ -1,3 +1,4 @@
+/* tags */
 h4 {
     margin: 5% 0;
 }
@@ -5,6 +6,8 @@ a {
     text-decoration: none;
     color: #121111;
 }
+
+
 .main {
     margin: 10% 25%;
 }
@@ -15,7 +18,7 @@ a {
 .inputs {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    /* align-items: flex-start; */
     justify-content: space-around;
     margin: 2% 0;
 }
@@ -24,9 +27,8 @@ a {
     flex-direction: column;
     margin: 1% 1%;
 }
-
 .btn {
     background-color: #121111;
     color: white;
-    margin: 1%;
+    margin: 2% 0;
 }
