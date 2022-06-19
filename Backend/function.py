@@ -4,19 +4,20 @@ import requests
 BASE = 'https://jsonplaceholder.typicode.com/'
 
 
-# Validation of input data
-def validation_post_input(post_id, user_id, title, body):
+# Validation of input data for method post
+def validation_post_id_user_id(post_id, user_id, title, body):
     if type(post_id) == int and type(user_id) == int:
         if validation_title_body(title, body):
             return True
 
 
+# Validation of input data for method put
 def validation_title_body(title, body):
     if type(title) == str and type(body) == str:
         return True
 
 
-# Validation with a third party API
+# Validation user with external AP
 def validation_user(user):
     json_api = requests.get(f'{BASE}users').json()
     user_id_list = [i['id'] for i in json_api]

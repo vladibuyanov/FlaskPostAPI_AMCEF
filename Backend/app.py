@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger, swag_from
 
 import my_swagger
-from function import validation_post_input, validation_title_body, validation_user, search_post
+from function import validation_post_id_user_id, validation_title_body, validation_user, search_post
 
 app = Flask(__name__)
 api = Api()
@@ -70,7 +70,7 @@ class Main(Resource):
     @swag_from(my_swagger.specs_dict_post)
     def post(self, post_id):
         args = posts_post_args.parse_args()
-        if validation_post_input(post_id, args['user_id'], args['title'], args['body']):
+        if validation_post_id_user_id(post_id, args['user_id'], args['title'], args['body']):
             if validation_user(args['user_id']):
                 result = Posts.query.filter_by(id=post_id).first()
                 if not result:
