@@ -2,9 +2,9 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger, swag_from
-import requests
 
-from swagger import *
+import my_swagger
+from function import validation_post_input, validation_title_body, validation_user, search_post
 
 app = Flask(__name__)
 api = Api()
@@ -12,9 +12,6 @@ app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
 swag = Swagger(app)
-
-# External API variable
-BASE = 'https://jsonplaceholder.typicode.com/'
 
 
 # Data base models
@@ -51,37 +48,9 @@ resource_fields = {
 }
 
 
-# Validation of input data
-def validation_post_input(post_id, user_id, title, body):
-    if type(post_id) == int and type(user_id) == int:
-        if type(title) == str and type(body) == str:
-            return True
-
-
-def validation_put_input(title, body):
-    if type(title) == str and type(body) == str:
-        return True
-
-
-# Validation with a third party API
-def validation_user(user):
-    json_api = requests.get(f'{BASE}users').json()
-    user_id_list = [i['id'] for i in json_api]
-    if user in user_id_list:
-        return True
-
-
-# Search for a post using an external AP
-def search_post(post_id):
-    posts_res = requests.get(f'{BASE}posts/{post_id}').json()
-    if posts_res:
-        return posts_res
-    return False
-
-
 class Main(Resource):
     @marshal_with(resource_fields)
-    @swag_from(specs_dict_get)
+    @swag_from(my_swagger.specs_dict_get)
     def get(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
@@ -98,7 +67,7 @@ class Main(Resource):
             return search_post(post_id), 200
         return abort(408, message='Post not exist')
 
-    @swag_from(specs_dict_post)
+    @swag_from(my_swagger.specs_dict_post)
     def post(self, post_id):
         args = posts_post_args.parse_args()
         if validation_post_input(post_id, args['user_id'], args['title'], args['body']):
@@ -118,12 +87,12 @@ class Main(Resource):
             abort(401, message='Authorization failed')
         abort(403, message='Incorrect data')
 
-    @swag_from(specs_dict_put)
+    @swag_from(my_swagger.specs_dict_put)
     def put(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
             args = posts_put_args.parse_args()
-            if validation_put_input(args['title'], args['body']):
+            if validation_title_body(args['title'], args['body']):
                 if args['title']:
                     result.title = args['title']
                 if args['body']:
@@ -133,7 +102,7 @@ class Main(Resource):
             abort(403, message='Incorrect data')
         abort(408, message='Post not exist')
 
-    @swag_from(specs_dict_get)
+    @swag_from(my_swagger.specs_dict_get)
     def delete(self, post_id):
         result = Posts.query.filter_by(id=post_id).first()
         if result:
